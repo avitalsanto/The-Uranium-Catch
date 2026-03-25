@@ -387,6 +387,10 @@
             <div class="bg-purple-900/20 border border-purple-500/20 rounded-lg py-2 px-1 text-center"><div class="text-lg">👻</div><div class="text-[7px] text-purple-400/60 mt-1">רוח</div></div>
             <div class="bg-white/[0.03] rounded-lg py-2 px-1 text-center"><div class="text-lg">💎</div><div class="text-[7px] opacity-35 mt-1">יהלום</div></div>
         </div>
+        <div class="bg-amber-900/20 border border-amber-500/20 rounded-xl px-3 py-2 mb-4 max-w-[280px] text-center">
+            <span class="text-amber-400 text-xs font-bold">💎 אורניום פרימיום</span>
+            <span class="text-[9px] opacity-50 block mt-0.5">3 לחיצות, ניקוד כפול! (משלב 3)</span>
+        </div>
         <div id="best-score-display" class="text-sm opacity-35 mb-2 font-light" style="display:none">🏆 שיא: <span id="best-score-val">0</span></div>
         <button class="btn" onclick="startGame()">☢️ התחל משימה</button>
     </div>
@@ -455,6 +459,10 @@
     const blueImg = new Image();
     blueImg.src = blueSvgUrl;
 
+    const premiumSvgUrl = "https://static.wixstatic.com/shapes/b4f4e1_062596e9878a4ae988531c3111dc8111.svg";
+    const premiumImg = new Image();
+    premiumImg.src = premiumSvgUrl;
+
     const wasteSvgs = wasteSvgUrls.map(url => {
         const img = new Image();
         img.src = url;
@@ -512,6 +520,7 @@
 
     const COLORS = [
         { name: 'blue', isTarget: true, glow: '#3b82f6' },
+        { name: 'premium', isTarget: true, isPremium: true, glow: '#f59e0b' },
         { name: 'cyan', svgIndex: 0, isTarget: false },
         { name: 'red', svgIndex: 1, isTarget: false },
         { name: 'green', svgIndex: 2, isTarget: false },
@@ -766,11 +775,20 @@
                 spawnsSinceSpecial++;
                 let blueProb = 0.4;
                 if (Math.random() < blueProb) {
-                    this.config = COLORS[0]; 
-                    this.img = blueImg;
+                    const premiumChance = state.level < 3 ? 0 : Math.min(0.5, (state.level - 2) * 0.1);
+                    if (Math.random() < premiumChance) {
+                        this.config = COLORS[1];
+                        this.img = premiumImg;
+                        this.hitsLeft = 3;
+                    } else {
+                        this.config = COLORS[0];
+                        this.img = blueImg;
+                        this.hitsLeft = 1;
+                    }
                 } else {
-                    this.config = COLORS[1 + Math.floor(Math.random() * (COLORS.length - 1))];
+                    this.config = COLORS[2 + Math.floor(Math.random() * (COLORS.length - 2))];
                     this.img = wasteSvgs[this.config.svgIndex];
+                    this.hitsLeft = 1;
                 }
                 this.type = 'box';
                 const shrink = Math.max(0.65, 1 - (state.level - 1) * 0.04);
@@ -842,11 +860,12 @@
                         showFloatingText(this.x + this.width/2, hitY - 40, "🛡️ מגן!", "#06b6d4");
                         createExplosion(this.x + this.width/2, hitY, '#06b6d4', 20, this.scale);
                     } else {
-                        state.score = Math.max(0, state.score - 1);
-                        showFloatingText(this.x + this.width/2, hitY - 40, "-1", "#ef4444");
-                        loseLife("מיכל אורניום התרסק!");
-                        createExplosion(this.x + this.width/2, hitY, '#3b82f6', 30, this.scale);
-                        state.shake = 15;
+                        const penalty = this.config.isPremium ? 2 : 1;
+                        state.score = Math.max(0, state.score - penalty);
+                        showFloatingText(this.x + this.width/2, hitY - 40, `-${penalty}`, "#ef4444");
+                        for (let p = 0; p < penalty; p++) loseLife(this.config.isPremium ? "אורניום פרימיום התרסק!" : "מיכל אורניום התרסק!");
+                        createExplosion(this.x + this.width/2, hitY, this.config.isPremium ? '#f59e0b' : '#3b82f6', 30, this.scale);
+                        state.shake = this.config.isPremium ? 25 : 15;
                     }
                     return true;
                 } else if (this.type === 'special') {
@@ -885,7 +904,7 @@
                     const alpha = (t / this.trail.length) * 0.3;
                     const size = this.width * 0.2 * (t / this.trail.length);
                     ctx.globalAlpha = alpha;
-                    ctx.fillStyle = '#60a5fa';
+                    ctx.fillStyle = this.config.isPremium ? '#fbbf24' : '#60a5fa';
                     ctx.beginPath(); ctx.arc(p.x, p.y, size, 0, Math.PI * 2); ctx.fill();
                 }
                 ctx.globalAlpha = 1;
@@ -903,6 +922,9 @@
                     if (this.y > window.innerHeight * 0.7) {
                         ctx.shadowBlur = 22;
                         ctx.shadowColor = '#ef4444';
+                    } else if (this.config.isPremium) {
+                        ctx.shadowBlur = 28;
+                        ctx.shadowColor = '#f59e0b';
                     } else {
                         ctx.shadowBlur = 28;
                         ctx.shadowColor = '#60a5fa';
@@ -911,7 +933,7 @@
                 
                 if (this.img.complete && this.img.naturalWidth > 0) {
                     ctx.drawImage(this.img, -this.width/2, -this.height/2, this.width, this.height);
-                    if (this.config.isTarget && this.y <= window.innerHeight * 0.7) {
+                    if (this.config.isTarget && !this.config.isPremium && this.y <= window.innerHeight * 0.7) {
                         ctx.shadowBlur = 50;
                         ctx.shadowColor = '#3b82f6';
                         ctx.drawImage(this.img, -this.width/2, -this.height/2, this.width, this.height);
@@ -919,6 +941,19 @@
                 } else {
                     ctx.fillStyle = this.config.isTarget ? '#3b82f6' : '#555';
                     ctx.fillRect(-this.width/2, -this.height/2, this.width, this.height);
+                }
+                if (this.config.isPremium && this.hitsLeft < 3) {
+                    ctx.globalAlpha = 0.7;
+                    ctx.strokeStyle = '#ef4444';
+                    ctx.lineWidth = 2;
+                    const scratches = 3 - this.hitsLeft;
+                    for (let s = 0; s < scratches; s++) {
+                        const sx = -this.width * 0.3 + s * this.width * 0.3;
+                        ctx.beginPath();
+                        ctx.moveTo(sx - this.width * 0.1, -this.height * 0.35);
+                        ctx.lineTo(sx + this.width * 0.1, this.height * 0.35);
+                        ctx.stroke();
+                    }
                 }
                 ctx.globalAlpha = 1;
                 ctx.shadowBlur = 0;
@@ -1160,6 +1195,7 @@
                 y >= item.y - hitRadius && y <= item.y + item.height + hitRadius) {
                 let pri = 0;
                 if (item.type === 'special') pri = 2;
+                else if (item.type === 'box' && item.config.isTarget && item.config.isPremium) pri = 4;
                 else if (item.type === 'box' && item.config.isTarget) pri = 3;
                 else pri = 1;
                 if (pri > bestPriority) { bestPriority = pri; bestIdx = i; }
@@ -1171,21 +1207,37 @@
             const item = activeItems[i];
             if (item.type === 'box') {
                 if (item.config.isTarget) {
+                        item.hitsLeft = (item.hitsLeft || 1) - 1;
+                        
+                        if (item.hitsLeft > 0) {
+                            state.combo++;
+                            if (state.combo > maxCombo) maxCombo = state.combo;
+                            createHitFlash(clientX, clientY, 'rgba(245,158,11,0.6)');
+                            showFloatingText(x, y, `${item.hitsLeft} נשאר`, '#f59e0b');
+                            createExplosion(x, y, '#f59e0b', 8, item.scale);
+                            try { beep(400 + (3 - item.hitsLeft) * 150, 0.1); } catch(e){}
+                            haptic(15);
+                            state.shake = Math.min(5, 2 + state.combo);
+                        } else {
                         state.combo++;
                         if (state.combo > maxCombo) maxCombo = state.combo;
                         let mult = state.isTurbo ? 3 : (state.isFever ? 2 : 1);
                         if (isStar) mult *= 2;
-                        let pts = 10 * mult;
+                        let pts = item.config.isPremium ? 25 * mult : 10 * mult;
                         state.score += pts;
-                        state.progress++;
+                        state.progress += item.config.isPremium ? 2 : 1;
                         state.shake = Math.min(8, 2 + state.combo);
                         const cleanAmount = state.level <= 2 ? 0 : Math.min(15, (state.level - 2) * 3);
                         cleanPercentageOfFloor(cleanAmount);
-                        createExplosion(x, y, '#3b82f6', 15 + state.combo * 2, item.scale);
-                        createHitFlash(clientX, clientY, 'rgba(59,130,246,0.6)');
-                        showFloatingText(x, y, `+${pts}`, '#60a5fa');
+                        const color = item.config.isPremium ? '#f59e0b' : '#3b82f6';
+                        createExplosion(x, y, color, 15 + state.combo * 2, item.scale);
+                        createHitFlash(clientX, clientY, item.config.isPremium ? 'rgba(245,158,11,0.6)' : 'rgba(59,130,246,0.6)');
+                        showFloatingText(x, y, `+${pts}`, item.config.isPremium ? '#fbbf24' : '#60a5fa');
                         try { beep(500 + Math.min(state.combo, 15)*40, 0.15); } catch(e){}
                         haptic(10);
+                        if (item.config.isPremium) {
+                            showFloatingText(x, y - 30, "💎 פרימיום!", "#fbbf24");
+                        }
                         const cx = window.innerWidth / 2, cy = window.innerHeight * 0.35;
                         if (state.combo === 3) {
                             showFloatingText(cx, cy, "🔥 x3!", "#facc15");
@@ -1204,6 +1256,7 @@
                         activeItems.splice(i, 1);
                         updateUI();
                         checkLevelComplete();
+                        }
                     } else {
                         if (hasShield) {
                             hasShield = false;
@@ -1397,7 +1450,7 @@
             ctx.globalAlpha = 1;
             if (c.config.isTarget) {
                 ctx.shadowBlur = 20;
-                ctx.shadowColor = '#3b82f6';
+                ctx.shadowColor = c.config.isPremium ? '#f59e0b' : '#3b82f6';
             }
             ctx.translate(c.x + c.w/2, c.y + c.h/2);
             ctx.rotate(c.angle);
