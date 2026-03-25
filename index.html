@@ -559,20 +559,19 @@
     ];
 
     const nebulaClouds = [];
+    const _cloudHueOffsets = [-40, -15, 0, 20, 50, 80, 110, 140, 170, -60, 30, 60, 90, 120];
     for (let i = 0; i < 14; i++) {
-        const isWarm = i < 7;
         nebulaClouds.push({
-            x: isWarm ? (Math.random() * 0.6) : (0.4 + Math.random() * 0.6),
-            y: 0.1 + Math.random() * 0.7,
+            x: Math.random(),
+            y: 0.05 + Math.random() * 0.85,
             r: Math.random() * 300 + 200,
-            vx: (Math.random() - 0.5) * 0.00015,
-            vy: (Math.random() - 0.5) * 0.00012,
-            hueShift: isWarm ? (Math.random() * 40 - 20) : (Math.random() * 40 + 60),
+            vx: (Math.random() - 0.5) * 0.0004,
+            vy: (Math.random() - 0.5) * 0.0003,
+            hueShift: _cloudHueOffsets[i],
             saturation: 55 + Math.random() * 30,
-            lightness: isWarm ? (30 + Math.random() * 20) : (25 + Math.random() * 20),
-            a: Math.random() * 0.16 + 0.10,
-            phase: Math.random() * Math.PI * 2,
-            warm: isWarm
+            lightness: 25 + Math.random() * 22,
+            a: Math.random() * 0.14 + 0.09,
+            phase: Math.random() * Math.PI * 2
         });
     }
 
@@ -621,25 +620,25 @@
         ctx.fillRect(0, 0, w, h);
 
         for (const c of nebulaClouds) {
-            c.x += c.vx + Math.sin(t * 0.25 + c.phase) * 0.00015;
-            c.y += c.vy + Math.cos(t * 0.2 + c.phase) * 0.0001;
-            if (c.x < -0.4) c.x = 1.4;
-            if (c.x > 1.4) c.x = -0.4;
-            if (c.y < -0.4) c.y = 1.4;
-            if (c.y > 1.4) c.y = -0.4;
+            c.x += c.vx + Math.sin(t * 0.35 + c.phase) * 0.0003;
+            c.y += c.vy + Math.cos(t * 0.28 + c.phase) * 0.0002;
+            if (c.x < -0.5) c.x = 1.5;
+            if (c.x > 1.5) c.x = -0.5;
+            if (c.y < -0.5) c.y = 1.5;
+            if (c.y > 1.5) c.y = -0.5;
 
-            const drift = Math.sin(t * 0.14 + c.phase * 1.5) * 0.1;
+            const drift = Math.sin(t * 0.2 + c.phase * 1.5) * 0.14;
             const cx = (c.x + drift) * w;
-            const cy = (c.y + Math.cos(t * 0.1 + c.phase * 0.7) * 0.07) * h;
-            const swell = 1 + Math.sin(t * 0.3 + c.phase) * 0.35;
+            const cy = (c.y + Math.cos(t * 0.15 + c.phase * 0.7) * 0.1) * h;
+            const swell = 1 + Math.sin(t * 0.35 + c.phase) * 0.35;
             const cr = c.r * swell;
-            const hue = (theme.accent + c.hueShift + Math.sin(t * 0.12 + c.phase) * 35) % 360;
-            const ca = c.a * (0.55 + Math.sin(t * 0.18 + c.phase * 2) * 0.45);
+            const hue = (theme.accent + c.hueShift + Math.sin(t * 0.18 + c.phase) * 40) % 360;
+            const ca = c.a * (0.55 + Math.sin(t * 0.22 + c.phase * 2) * 0.45);
 
             const cg = ctx.createRadialGradient(cx, cy, cr * 0.08, cx, cy, cr);
             cg.addColorStop(0, `hsla(${hue}, ${c.saturation}%, ${c.lightness}%, ${ca})`);
-            cg.addColorStop(0.3, `hsla(${(hue + 20) % 360}, ${c.saturation}%, ${c.lightness - 5}%, ${ca * 0.65})`);
-            cg.addColorStop(0.6, `hsla(${(hue + 45) % 360}, ${c.saturation - 10}%, ${c.lightness - 10}%, ${ca * 0.25})`);
+            cg.addColorStop(0.3, `hsla(${(hue + 25) % 360}, ${c.saturation}%, ${c.lightness - 5}%, ${ca * 0.6})`);
+            cg.addColorStop(0.6, `hsla(${(hue + 55) % 360}, ${c.saturation - 8}%, ${c.lightness - 8}%, ${ca * 0.22})`);
             cg.addColorStop(1, 'transparent');
             ctx.fillStyle = cg;
             ctx.fillRect(cx - cr, cy - cr, cr * 2, cr * 2);
@@ -789,7 +788,7 @@
 
             this.y = -this.height;
             this.x = this._findNonOverlappingX();
-            let speedMod = (state.level - 1) * 0.03 + Math.random() * 0.35;
+            let speedMod = (state.level <= 4 ? (state.level-1) * 0.03 : 0.09 + (state.level-4) * 0.04) + Math.random() * 0.35;
             this.speed = (baseSpeed + speedMod);
             this.angle = (Math.random() - 0.5) * 0.05;
             this.trail = [];
@@ -1025,13 +1024,13 @@
         state.progress = 0;
         state.lives = 5; 
         state.target = 5 + state.level * 2;
-        spawnRate = Math.max(1000, 1600 - (state.level - 1) * 60);
+        spawnRate = Math.max(900, 1600 - (state.level - 1) * 75);
         waveState = { items: 0, maxItems: 0, restTimer: 0, inRest: false, waveCount: 0 };
         spawnTimer = 0;
         lastTime = 0;
         state.isPlaying = true;
         screens.levelUp.classList.add('hidden');
-        cleanPercentageOfFloor(50); 
+        cleanPercentageOfFloor(40); 
         updateUI();
         gameLoop();
     }
@@ -1180,7 +1179,7 @@
                         state.score += pts;
                         state.progress++;
                         state.shake = Math.min(8, 2 + state.combo);
-                        const cleanAmount = state.level * 5;
+                        const cleanAmount = state.level * 4;
                         cleanPercentageOfFloor(cleanAmount);
                         createExplosion(x, y, '#3b82f6', 15 + state.combo * 2, item.scale);
                         createHitFlash(clientX, clientY, 'rgba(59,130,246,0.6)');
@@ -1260,7 +1259,7 @@
                         haptic([50, 30, 50, 30, 80]);
                         try { beep(100, 0.4, 'sawtooth', 0.1); setTimeout(() => beep(60, 0.5, 'square', 0.08), 100); } catch(e){}
                         showFloatingText(x, y, "💣 בום!", "#f97316");
-                        cleanPercentageOfFloor(50);
+                        cleanPercentageOfFloor(Math.max(30, 50 - state.level * 2));
                         for (let j = activeItems.length - 1; j >= 0; j--) {
                             if (activeItems[j].type === 'box' && !activeItems[j].config.isTarget) {
                                 createExplosion(activeItems[j].x + activeItems[j].width/2, activeItems[j].y + activeItems[j].height/2, '#f97316', 8);
@@ -1303,7 +1302,7 @@
                         haptic(30);
                         try { [200,400,600,800].forEach((f,i) => setTimeout(() => beep(f, 0.08, 'sawtooth', 0.05), i*40)); } catch(e){}
                         showFloatingText(x, y, "🔥 שריפה!", "#f59e0b");
-                        cleanPercentageOfFloor(80);
+                        cleanPercentageOfFloor(Math.max(50, 80 - state.level * 3));
                         for (const lc of landedContainers) {
                             createExplosion(lc.x + lc.w/2, lc.y + lc.h/2, '#f59e0b', 3);
                         }
@@ -1439,7 +1438,7 @@
             }
             if (waveState.items >= waveState.maxItems) {
                 waveState.inRest = true;
-                waveState.restTimer = 1200;
+                waveState.restTimer = Math.max(700, 1200 - state.level * 50);
             }
             spawnTimer = 0;
         }
