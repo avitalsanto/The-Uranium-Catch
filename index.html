@@ -59,6 +59,7 @@
             right: max(6px, env(safe-area-inset-right, 6px));
             display: flex;
             justify-content: space-between;
+            align-items: center;
             color: white;
             pointer-events: none;
             z-index: 5;
@@ -258,10 +259,7 @@
             font-family: 'Secular One', 'Rubik', sans-serif;
             font-size: clamp(2.2rem, 9vw, 3.2rem);
             font-weight: 400;
-            background: linear-gradient(135deg, #fff 0%, #93c5fd 40%, #3b82f6 70%, #6366f1 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: #ffffff;
             line-height: 1.2;
             filter: drop-shadow(0 4px 20px rgba(59,130,246,0.4));
             letter-spacing: 1px;
@@ -326,22 +324,14 @@
     <div id="level-progress-bar"><div id="level-progress-fill"></div></div>
 
     <div class="ui-overlay">
-        <div class="flex flex-col gap-1">
-            <div class="stat-box">
-                <div class="text-[7px] font-bold opacity-40 text-blue-300">ניקוי</div>
-                <div class="text-sm font-bold" id="clean-power">5%</div>
-            </div>
-            <div class="stat-box">
-                <div class="text-[7px] font-bold opacity-40">ניקוד</div>
-                <div class="text-sm font-bold text-blue-400" id="score">0</div>
-            </div>
+        <div class="stat-box">
+            <div class="text-[7px] font-bold opacity-40">ניקוד</div>
+            <div class="text-sm font-bold text-blue-400" id="score">0</div>
         </div>
 
-        <div class="flex flex-col items-center gap-1">
-            <div class="stat-box px-5">
-                <div class="text-[7px] font-bold opacity-40">שלב <span id="level-num">1</span></div>
-                <div class="text-base font-bold"><span id="level-progress">0</span> / <span id="level-target">5</span></div>
-            </div>
+        <div class="stat-box px-5">
+            <div class="text-[7px] font-bold opacity-40">שלב <span id="level-num">1</span></div>
+            <div class="text-base font-bold"><span id="level-progress">0</span> / <span id="level-target">5</span></div>
         </div>
 
         <div class="stat-box flex flex-col items-end min-w-[60px]">
@@ -387,10 +377,6 @@
             <div class="bg-purple-900/20 border border-purple-500/20 rounded-lg py-2 px-1 text-center"><div class="text-lg">👻</div><div class="text-[7px] text-purple-400/60 mt-1">רוח</div></div>
             <div class="bg-white/[0.03] rounded-lg py-2 px-1 text-center"><div class="text-lg">💎</div><div class="text-[7px] opacity-35 mt-1">יהלום</div></div>
         </div>
-        <div class="bg-amber-900/20 border border-amber-500/20 rounded-xl px-3 py-2 mb-4 max-w-[280px] text-center">
-            <span class="text-amber-400 text-xs font-bold">💎 אורניום פרימיום</span>
-            <span class="text-[9px] opacity-50 block mt-0.5">3 לחיצות, ניקוד כפול! (משלב 3)</span>
-        </div>
         <div id="best-score-display" class="text-sm opacity-35 mb-2 font-light" style="display:none">🏆 שיא: <span id="best-score-val">0</span></div>
         <button class="btn" onclick="startGame()">☢️ התחל משימה</button>
     </div>
@@ -400,12 +386,15 @@
         <h2 class="text-3xl text-white mb-1" style="font-family:'Secular One','Rubik',sans-serif">משימה הושלמה!</h2>
         <p class="text-blue-300/50 text-sm font-light mb-4">האורניום אובטח בהצלחה</p>
         <div class="bg-blue-600/10 p-5 rounded-3xl border border-blue-400/15 mb-5 w-full max-w-[280px]">
-            <p class="text-blue-300 font-bold text-sm mb-1">עוצמת הניקוי עלתה ב-5%!</p>
             <p class="text-green-400 font-bold text-sm">החיים התחדשו ל-5!</p>
             <div class="h-px bg-white/10 my-3"></div>
             <p class="text-[10px] opacity-40 mb-1">המטרה הבאה</p>
             <p class="text-2xl" style="font-family:'Secular One','Rubik',sans-serif">שלב <span id="next-level-val">2</span></p>
             <p class="text-blue-400 mt-1 font-bold text-sm"><span id="next-target-val">10</span> מיכלי אורניום</p>
+        </div>
+        <div id="premium-unlock-msg" class="hidden bg-amber-900/20 border border-amber-500/20 rounded-xl px-3 py-2 mb-3 max-w-[280px] text-center">
+            <span class="text-amber-400 text-xs font-bold">💎 חדש: אורניום פרימיום!</span>
+            <span class="text-[9px] opacity-50 block mt-0.5">דורש 3 לחיצות, שווה ניקוד כפול. היזהר -- אם הוא מתרסק, מאבדים 2 חיים!</span>
         </div>
         <button class="btn" onclick="startNextLevel()">▶️ משימה הבאה</button>
     </div>
@@ -438,7 +427,6 @@
     const progressEl = document.getElementById('level-progress');
     const targetEl = document.getElementById('level-target');
     const livesEl = document.getElementById('lives');
-    const cleanPowerEl = document.getElementById('clean-power');
     
     const screens = {
         start: document.getElementById('start-screen'),
@@ -775,7 +763,7 @@
                 spawnsSinceSpecial++;
                 let blueProb = 0.4;
                 if (Math.random() < blueProb) {
-                    const premiumChance = state.level < 3 ? 0 : Math.min(0.5, (state.level - 2) * 0.1);
+                    const premiumChance = state.level < 3 ? 0 : Math.min(0.5, (state.level - 2) * 0.05);
                     if (Math.random() < premiumChance) {
                         this.config = COLORS[1];
                         this.img = premiumImg;
@@ -923,8 +911,8 @@
                         ctx.shadowBlur = 22;
                         ctx.shadowColor = '#ef4444';
                     } else if (this.config.isPremium) {
-                        ctx.shadowBlur = 28;
-                        ctx.shadowColor = '#f59e0b';
+                        ctx.shadowBlur = 45;
+                        ctx.shadowColor = 'rgba(245, 158, 11, 0.4)';
                     } else {
                         ctx.shadowBlur = 28;
                         ctx.shadowColor = '#60a5fa';
@@ -1093,6 +1081,9 @@
             try { [600,800,1000,1200].forEach((f,i) => setTimeout(() => beep(f, 0.15), i*80)); } catch(e){}
             document.getElementById('next-level-val').innerText = state.level;
             document.getElementById('next-target-val').innerText = 8 + state.level * 2;
+            const premiumMsg = document.getElementById('premium-unlock-msg');
+            if (state.level === 3) premiumMsg.classList.remove('hidden');
+            else premiumMsg.classList.add('hidden');
             screens.levelUp.classList.remove('hidden');
         }
     }
@@ -1109,8 +1100,6 @@
         progressEl.innerText = state.progress;
         targetEl.innerText = state.target;
         livesEl.innerText = "❤️".repeat(Math.max(0, state.lives));
-        const cleanPower = state.level * 5;
-        cleanPowerEl.innerText = `${cleanPower}%`;
         
         try { document.getElementById('level-progress-fill').style.width = Math.min(100, (state.progress / state.target) * 100) + '%'; } catch(e){}
 
@@ -1450,7 +1439,7 @@
             ctx.globalAlpha = 1;
             if (c.config.isTarget) {
                 ctx.shadowBlur = 20;
-                ctx.shadowColor = c.config.isPremium ? '#f59e0b' : '#3b82f6';
+                ctx.shadowColor = c.config.isPremium ? 'rgba(245,158,11,0.4)' : '#3b82f6';
             }
             ctx.translate(c.x + c.w/2, c.y + c.h/2);
             ctx.rotate(c.angle);
