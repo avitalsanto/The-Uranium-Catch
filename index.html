@@ -354,16 +354,16 @@
     </div>
 
     <div id="start-screen" class="game-screen text-center">
-        <div class="icon-float text-6xl mb-3">☢️</div>
-        <h1 class="start-title mb-1">תופסים את האורניום</h1>
-        <p class="start-subtitle mb-5">(המיכל הכחול)</p>
-        <div class="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-4 mb-4 max-w-[300px]">
+        <div class="icon-float text-6xl mb-2">☢️</div>
+        <h1 class="start-title mb-0">תופסים את האורניום</h1>
+        <p class="start-subtitle mb-4">(המיכל הכחול)</p>
+        <div class="bg-white/[0.03] border border-white/[0.06] rounded-2xl p-3 mb-3 max-w-[300px] w-full">
             <p class="text-[0.85rem] leading-relaxed opacity-60 font-light">
                 לחץ על <span class="text-blue-400 font-bold">המיכלים הכחולים</span> בלבד!<br>
-                <span class="text-red-400/60">אל תיגע</span> במיכלי הפסולת.
+                <span class="text-white font-bold">אל תיגע</span> במיכלי הפסולת.
             </p>
         </div>
-        <div class="grid grid-cols-4 gap-[5px] mb-4 max-w-[280px] w-full">
+        <div class="grid grid-cols-4 gap-[6px] mb-3 max-w-[300px] w-full">
             <div class="bg-white/[0.03] rounded-lg py-2 px-1 text-center"><div class="text-lg">❤️</div><div class="text-[7px] opacity-35 mt-1">חיים</div></div>
             <div class="bg-white/[0.03] rounded-lg py-2 px-1 text-center"><div class="text-lg">⏳</div><div class="text-[7px] opacity-35 mt-1">האטה</div></div>
             <div class="bg-white/[0.03] rounded-lg py-2 px-1 text-center"><div class="text-lg">⚡</div><div class="text-[7px] opacity-35 mt-1">טורבו</div></div>
@@ -377,22 +377,22 @@
             <div class="bg-purple-900/20 border border-purple-500/20 rounded-lg py-2 px-1 text-center"><div class="text-lg">👻</div><div class="text-[7px] text-purple-400/60 mt-1">רוח</div></div>
             <div class="bg-white/[0.03] rounded-lg py-2 px-1 text-center"><div class="text-lg">💎</div><div class="text-[7px] opacity-35 mt-1">יהלום</div></div>
         </div>
-        <div id="best-score-display" class="text-sm opacity-35 mb-2 font-light" style="display:none">🏆 שיא: <span id="best-score-val">0</span></div>
+        <div id="best-score-display" class="text-sm opacity-35 mb-1 font-light" style="display:none">🏆 שיא: <span id="best-score-val">0</span></div>
         <button class="btn" onclick="startGame()">☢️ התחל משימה</button>
     </div>
 
     <div id="level-up-screen" class="game-screen hidden text-center">
-        <div class="text-6xl mb-3 animate-bounce">☢️</div>
+        <div class="text-6xl mb-2 animate-bounce">☢️</div>
         <h2 class="text-3xl text-white mb-1" style="font-family:'Secular One','Rubik',sans-serif">משימה הושלמה!</h2>
-        <p class="text-blue-300/50 text-sm font-light mb-4">האורניום אובטח בהצלחה</p>
-        <div class="bg-blue-600/10 p-5 rounded-3xl border border-blue-400/15 mb-5 w-full max-w-[280px]">
-            <p class="text-green-400 font-bold text-sm">החיים התחדשו ל-5!</p>
-            <div class="h-px bg-white/10 my-3"></div>
+        <p class="text-white/40 text-sm font-light mb-4">האורניום אובטח בהצלחה</p>
+        <div class="bg-white/[0.04] border border-white/[0.08] p-5 rounded-2xl mb-4 max-w-[300px] w-full">
+            <p class="text-green-400 font-bold text-sm mb-3">החיים התחדשו!</p>
+            <div class="h-px bg-white/10 mb-3"></div>
             <p class="text-[10px] opacity-40 mb-1">המטרה הבאה</p>
             <p class="text-2xl" style="font-family:'Secular One','Rubik',sans-serif">שלב <span id="next-level-val">2</span></p>
             <p class="text-blue-400 mt-1 font-bold text-sm"><span id="next-target-val">10</span> מיכלי אורניום</p>
         </div>
-        <div id="premium-unlock-msg" class="hidden bg-amber-900/20 border border-amber-500/20 rounded-xl px-3 py-2 mb-3 max-w-[280px] text-center">
+        <div id="premium-unlock-msg" class="hidden bg-amber-900/20 border border-amber-500/20 rounded-xl px-3 py-2 mb-3 max-w-[300px] w-full text-center">
             <span class="text-amber-400 text-xs font-bold">💎 חדש: אורניום פרימיום!</span>
             <span class="text-[9px] opacity-50 block mt-0.5">דורש 3 לחיצות, שווה ניקוד כפול. היזהר -- אם הוא מתרסק, מאבדים 2 חיים!</span>
         </div>
@@ -400,14 +400,15 @@
     </div>
 
     <div id="game-over-screen" class="game-screen hidden text-center">
-        <div class="text-5xl mb-3">💥</div>
+        <div class="text-5xl mb-2">💥</div>
         <h2 class="text-4xl text-red-500 mb-1" style="font-family:'Secular One','Rubik',sans-serif">המשימה נכשלה!</h2>
         <p id="fail-reason" class="text-sm mb-4 opacity-50 text-center px-4 font-light"></p>
-        <div class="bg-white/[0.04] border border-white/[0.06] rounded-3xl p-5 mb-4 min-w-[220px]">
+        <div class="bg-white/[0.04] border border-white/[0.08] rounded-2xl p-5 mb-4 max-w-[300px] w-full">
             <p class="text-[10px] opacity-40 mb-1">ניקוד סופי</p>
             <p id="final-score" class="text-5xl text-blue-400" style="font-family:'Secular One','Rubik',sans-serif">0</p>
             <div id="new-best-badge" class="text-yellow-400 text-sm font-bold mt-2" style="display:none">🏆 שיא חדש!</div>
-            <div class="flex justify-center gap-8 mt-3">
+            <div class="h-px bg-white/10 my-3"></div>
+            <div class="flex justify-center">
                 <div><p class="text-[9px] opacity-40">שלב</p><p id="final-level" class="text-lg font-bold">1</p></div>
             </div>
         </div>
@@ -763,7 +764,7 @@
                 spawnsSinceSpecial++;
                 let blueProb = 0.4;
                 if (Math.random() < blueProb) {
-                    const premiumChance = state.level < 3 ? 0 : Math.min(0.5, (state.level - 2) * 0.05);
+                    const premiumChance = state.level < 3 ? 0 : Math.min(0.5, (state.level - 2) * 0.04);
                     if (Math.random() < premiumChance) {
                         this.config = COLORS[1];
                         this.img = premiumImg;
@@ -1045,7 +1046,8 @@
 
     function startNextLevel() {
         state.progress = 0;
-        state.lives = Math.min(3, state.lives + 1); 
+        const maxLives = state.level >= 10 ? 5 : 3;
+        state.lives = Math.min(maxLives, state.lives + 1); 
         state.target = 8 + state.level * 2;
         spawnRate = Math.max(500, 1300 - (state.level - 1) * 80);
         waveState = { items: 0, maxItems: 0, restTimer: 0, inRest: false, waveCount: 0 };
