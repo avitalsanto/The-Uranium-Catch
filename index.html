@@ -788,7 +788,7 @@
 
             this.y = -this.height;
             this.x = this._findNonOverlappingX();
-            let speedMod = (state.level <= 4 ? (state.level-1) * 0.03 : 0.09 + (state.level-4) * 0.04) + Math.random() * 0.35;
+            let speedMod = (state.level <= 4 ? (state.level-1) * 0.03 : 0.09 + (state.level-4) * 0.08) + Math.random() * 0.3;
             this.speed = (baseSpeed + speedMod);
             this.angle = (Math.random() - 0.5) * 0.05;
             this.trail = [];
@@ -1022,15 +1022,15 @@
 
     function startNextLevel() {
         state.progress = 0;
-        state.lives = 3; 
+        state.lives = Math.min(3, state.lives + 1); 
         state.target = 8 + state.level * 2;
-        spawnRate = Math.max(800, 1300 - (state.level - 1) * 75);
+        spawnRate = Math.max(500, 1300 - (state.level - 1) * 80);
         waveState = { items: 0, maxItems: 0, restTimer: 0, inRest: false, waveCount: 0 };
         spawnTimer = 0;
         lastTime = 0;
         state.isPlaying = true;
         screens.levelUp.classList.add('hidden');
-        cleanPercentageOfFloor(40); 
+        cleanPercentageOfFloor(Math.max(15, 40 - state.level * 2)); 
         updateUI();
         gameLoop();
     }
@@ -1179,7 +1179,7 @@
                         state.score += pts;
                         state.progress++;
                         state.shake = Math.min(8, 2 + state.combo);
-                        const cleanAmount = state.level <= 2 ? 0 : (state.level - 2) * 3;
+                        const cleanAmount = state.level <= 2 ? 0 : Math.min(15, (state.level - 2) * 3);
                         cleanPercentageOfFloor(cleanAmount);
                         createExplosion(x, y, '#3b82f6', 15 + state.combo * 2, item.scale);
                         createHitFlash(clientX, clientY, 'rgba(59,130,246,0.6)');
@@ -1416,12 +1416,12 @@
                 waveState.inRest = false;
                 waveState.waveCount++;
                 const isBossWave = waveState.waveCount % 4 === 0;
-                const base = Math.min(12, 4 + state.level + Math.floor(Math.random() * 3));
-                waveState.maxItems = isBossWave ? Math.min(14, Math.ceil(base * 1.5)) : base;
+                const base = Math.min(16, 4 + state.level + Math.floor(Math.random() * 3));
+                waveState.maxItems = isBossWave ? Math.min(20, Math.ceil(base * 1.5)) : base;
                 waveState.items = 0;
             }
         } else if (waveState.maxItems === 0) {
-            waveState.maxItems = Math.min(12, 4 + state.level + Math.floor(Math.random() * 3));
+            waveState.maxItems = Math.min(16, 4 + state.level + Math.floor(Math.random() * 3));
             waveState.items = 0;
         }
 
@@ -1438,7 +1438,7 @@
             }
             if (waveState.items >= waveState.maxItems) {
                 waveState.inRest = true;
-                waveState.restTimer = Math.max(700, 1200 - state.level * 50);
+                waveState.restTimer = Math.max(400, 1200 - state.level * 70);
             }
             spawnTimer = 0;
         }
