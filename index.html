@@ -507,7 +507,7 @@
     let particles = [];
     let spawnTimer = 0;
     let spawnRate = 1600;
-    let baseSpeed = 0.7;
+    let baseSpeed = 1.0;
     let animationId;
 
     const COLORS = [
@@ -989,10 +989,10 @@
     function resetValues() {
         state.score = 0;
         state.level = 1;
-        state.lives = 5; 
+        state.lives = 3; 
         state.combo = 0;
         state.progress = 0;
-        state.target = 5;
+        state.target = 8;
         state.isFever = false;
         state.isSlowMo = false;
         state.isTurbo = false;
@@ -1001,7 +1001,7 @@
         state.turboTimer = 0;
         state.maxTimer = 5000;
         activeItems = []; landedContainers = []; particles = [];
-        spawnRate = 1600; spawnTimer = 0; spawnsSinceSpecial = 0; lastTime = 0;
+        spawnRate = 1300; spawnTimer = 0; spawnsSinceSpecial = 0; lastTime = 0;
         waveState = { items: 0, maxItems: 0, restTimer: 0, inRest: false, waveCount: 0 };
         hasShield = false; isFreeze = false; freezeTimer = 0; isStar = false; starTimer = 0; isGhost = false; ghostTimer = 0; maxCombo = 0;
     }
@@ -1022,9 +1022,9 @@
 
     function startNextLevel() {
         state.progress = 0;
-        state.lives = 5; 
-        state.target = 5 + state.level * 2;
-        spawnRate = Math.max(900, 1600 - (state.level - 1) * 75);
+        state.lives = 3; 
+        state.target = 8 + state.level * 2;
+        spawnRate = Math.max(800, 1300 - (state.level - 1) * 75);
         waveState = { items: 0, maxItems: 0, restTimer: 0, inRest: false, waveCount: 0 };
         spawnTimer = 0;
         lastTime = 0;
@@ -1057,7 +1057,7 @@
             state.level++;
             try { [600,800,1000,1200].forEach((f,i) => setTimeout(() => beep(f, 0.15), i*80)); } catch(e){}
             document.getElementById('next-level-val').innerText = state.level;
-            document.getElementById('next-target-val').innerText = 5 + state.level * 2;
+            document.getElementById('next-target-val').innerText = 8 + state.level * 2;
             screens.levelUp.classList.remove('hidden');
         }
     }
@@ -1179,7 +1179,7 @@
                         state.score += pts;
                         state.progress++;
                         state.shake = Math.min(8, 2 + state.combo);
-                        const cleanAmount = state.level * 4;
+                        const cleanAmount = state.level <= 2 ? 0 : (state.level - 2) * 3;
                         cleanPercentageOfFloor(cleanAmount);
                         createExplosion(x, y, '#3b82f6', 15 + state.combo * 2, item.scale);
                         createHitFlash(clientX, clientY, 'rgba(59,130,246,0.6)');
@@ -1416,12 +1416,12 @@
                 waveState.inRest = false;
                 waveState.waveCount++;
                 const isBossWave = waveState.waveCount % 4 === 0;
-                const base = Math.min(10, 3 + state.level + Math.floor(Math.random() * 3));
+                const base = Math.min(12, 4 + state.level + Math.floor(Math.random() * 3));
                 waveState.maxItems = isBossWave ? Math.min(14, Math.ceil(base * 1.5)) : base;
                 waveState.items = 0;
             }
         } else if (waveState.maxItems === 0) {
-            waveState.maxItems = Math.min(10, 3 + state.level + Math.floor(Math.random() * 3));
+            waveState.maxItems = Math.min(12, 4 + state.level + Math.floor(Math.random() * 3));
             waveState.items = 0;
         }
 
