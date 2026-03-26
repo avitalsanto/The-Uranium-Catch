@@ -1433,23 +1433,6 @@
         ctx.save();
         ctx.translate(ox, oy);
 
-        ctx.globalAlpha = 1;
-        for (let li = 0; li < landedContainers.length; li++) {
-            const c = landedContainers[li];
-            if (c.type !== 'box' || !c.img.complete) continue;
-            ctx.save();
-            ctx.globalAlpha = 1;
-            if (c.config.isTarget) {
-                ctx.shadowBlur = 20;
-                ctx.shadowColor = c.config.isPremium ? 'rgba(245,158,11,0.4)' : '#3b82f6';
-            }
-            ctx.translate(c.x + c.w/2, c.y + c.h/2);
-            ctx.rotate(c.angle);
-            ctx.drawImage(c.img, -c.w/2, -c.h/2, c.w, c.h);
-            ctx.shadowBlur = 0;
-            ctx.restore();
-        }
-
         spawnTimer += dt;
         let rate = (state.isTurbo || state.isFever) ? spawnRate * 0.45 : spawnRate;
         if (state.isSlowMo) rate *= 3.0;
@@ -1504,6 +1487,23 @@
                     ctx.globalAlpha = 1;
                 }
             }
+        }
+
+        ctx.globalAlpha = 1;
+        for (let li = 0; li < landedContainers.length; li++) {
+            const c = landedContainers[li];
+            if (c.type !== 'box' || !c.img.complete) continue;
+            ctx.save();
+            ctx.globalAlpha = 1;
+            if (c.config.isTarget) {
+                ctx.shadowBlur = 20;
+                ctx.shadowColor = c.config.isPremium ? 'rgba(245,158,11,0.4)' : '#3b82f6';
+            }
+            ctx.translate(c.x + c.w/2, c.y + c.h/2);
+            ctx.rotate(c.angle);
+            ctx.drawImage(c.img, -c.w/2, -c.h/2, c.w, c.h);
+            ctx.shadowBlur = 0;
+            ctx.restore();
         }
 
         ctx.restore();
